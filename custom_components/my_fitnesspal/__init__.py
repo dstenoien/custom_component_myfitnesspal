@@ -20,9 +20,6 @@ import myfitnesspal as ext_myfitnesspal
 
 from .const import DOMAIN, STARTUP_MESSAGE, PLATFORMS, ATTRIBUTION
 
-
-SCAN_INTERVAL = timedelta(minutes=30)
-
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -111,10 +108,8 @@ class MyFitnessPalDataUpdateCoordinator(DataUpdateCoordinator):
             self.display_name = self._username
 
         self.platforms = []
-
-        super().__init__(
-            hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL,
-        )
+        self.SCAN_INTERVAL = timedelta(minutes=15)
+        super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=self.SCAN_INTERVAL)
 
     async def _async_update_data(self):
         """Update data via library."""
@@ -139,6 +134,7 @@ class MyFitnessPalDataUpdateCoordinator(DataUpdateCoordinator):
         goal_sodium = info.goals.get("sodium", 0)
         goal_sugar = info.goals.get("sugar", 0)
         goal_protein = info.goals.get("protein", 0)
+        goal_fiber = info.goals.get("fiber", 0)
 
         total_calories = info.totals.get("calories", 0)
         total_carbohydrates = info.totals.get("carbohydrates", 0)
@@ -146,6 +142,7 @@ class MyFitnessPalDataUpdateCoordinator(DataUpdateCoordinator):
         total_sodium = info.totals.get("sodium", 0)
         total_sugar = info.totals.get("sugar", 0)
         total_protein = info.totals.get("protein", 0)
+        total_fiber = info.totals.get("fiber", 0)
         water = info.water
         _, weight = list(weights.items())[0] if len(weights) > 0 else 0,0
 
@@ -161,6 +158,7 @@ class MyFitnessPalDataUpdateCoordinator(DataUpdateCoordinator):
         result["goal_sodium"] = goal_sodium
         result["goal_sugar"] = goal_sugar
         result["goal_protein"] = goal_protein
+        result["goal_fiber"] = goal_fiber
 
         result["total_calories"] = total_calories
         result["total_carbohydrates"] = total_carbohydrates
@@ -168,6 +166,7 @@ class MyFitnessPalDataUpdateCoordinator(DataUpdateCoordinator):
         result["total_sodium"] = total_sodium
         result["total_sugar"] = total_sugar
         result["total_protein"] = total_protein
+        result["total_fiber"] = total_fiber
 
         result["cardio_calories_burned"] = cardio_calories_burned
         result["water"] = water
